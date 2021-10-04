@@ -3,7 +3,10 @@ FROM alpine:3.12
 RUN apk update && \
     apk --update --no-cache add \
     nginx \
-    openssl
+    openssl \
+    supervisor
+
+COPY supervisord.conf /etc/supervisord.conf
 
 COPY index.html /var/www/index.html
 
@@ -16,4 +19,4 @@ RUN mkdir -p /run/nginx && \
 
 EXPOSE 80 443
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]

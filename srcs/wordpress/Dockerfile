@@ -7,7 +7,10 @@ RUN apk update && \
     php7-fpm \
     php7-json \
     php7-mysqli \
+    supervisor \
     wget
+
+COPY supervisord.conf /etc/supervisord.conf
 
 RUN mkdir -p /run/nginx && \
     wget --quiet https://wordpress.org/latest.tar.gz && \
@@ -25,4 +28,4 @@ RUN mkdir -p /run/nginx && \
 
 EXPOSE 5050
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]
