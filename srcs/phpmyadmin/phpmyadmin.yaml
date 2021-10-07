@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: phpmyadmin-service
+  labels:
+    app: phpmyadmin
+  annotations:
+    metallb.universe.tf/allow-shared-ip: share
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.99.100
+  selector:
+    app: phpmyadmin
+  ports:
+  - name: phpmyadmin
+    port: 5000
+    protocol: TCP
+    targetPort: 5000
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpmyadmin-deployment
+  labels:
+    app: phpmyadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: phpmyadmin
+  template:
+    metadata:
+      labels:
+        app: phpmyadmin
+    spec:
+      containers:
+      - image: docker_img_phpmyadmin
+        name: phpmyadmin
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: phpmyadmin-config
+          mountPath: /etc/nginx/conf.d
+      volumes:
+      - name: phpmyadmin-config
+        configMap:
+          name: phpmyadmin-config
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: phpmyadmin-config
+data:
+  phpmyadmin-nginx.conf: |
+    server {
+      listen 5000 ssl;
+
+      root /var/www/phpmyadmin;
+      index index.php;
+
+      ssl_certificate_key /etc/ssl/certs/localhost.key;
+      ssl_certificate /etc/ssl/certs/localhost.crt;
+
+      error_page 497 https://$host:5000$request_uri;
+
+      location ~ \.php$ {
+        include fastcgi.conf;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_index index.php;
+      }
+    }
