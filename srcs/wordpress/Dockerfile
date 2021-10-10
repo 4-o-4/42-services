@@ -10,9 +10,8 @@ RUN apk update && \
     supervisor \
     wget
 
-COPY supervisord.conf /etc/supervisord.conf
-
 RUN mkdir -p /run/nginx && \
+    \
     wget --quiet https://wordpress.org/latest.tar.gz && \
     tar -xzvf latest.tar.gz > /dev/null && \
     rm -rf latest.tar.gz && \
@@ -25,6 +24,8 @@ RUN mkdir -p /run/nginx && \
         -e "s/password_here/iegah9Ah/" \
         -e "s/localhost/mysql-service/" \
         wp-config-sample.php > wp-config.php
+
+COPY conf/supervisord.conf /etc/supervisord.conf
 
 EXPOSE 5050
 
