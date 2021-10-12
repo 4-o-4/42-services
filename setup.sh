@@ -5,11 +5,11 @@ GREEN='\033[0;32m'
 END='\033[0m'
 
 export MINIKUBE_HOME=/Users/$USER/goinfre
-rm -rf /Users/$USER/goinfre/.minikube
+rm -rf ~/goinfre/.minikube
 
-# rm -rf ~/Library/Containers/com.docker.docker
-# mkdir -p ~/goinfre/docker
-# ln -s ~/goinfre/docker ~/Library/Containers/com.docker.docker
+rm -rf ~/Library/Containers/com.docker.docker
+mkdir -p ~/goinfre/docker
+ln -s ~/goinfre/docker ~/Library/Containers/com.docker.docker
 
 minikube config set WantVirtualBoxDriverWarning false
 minikube start --vm-driver=virtualbox
